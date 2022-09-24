@@ -1,7 +1,14 @@
-near-blank-project
+Nearly Board Chess Club
 ==================
 
 This app was initialized with [create-near-app]
+
+
+
+General Info
+===============
+
+This Dapp is a web3 chess game where users can login with a near wallet and vote for chess moves on a team. The goal is to have various different chess teams, or chess DAOs compete with each other on the Near Blockchain.
 
 
 Quick Start
@@ -85,8 +92,6 @@ Modify the line in `src/config.js` that sets the account name of the contract. S
 
 
 
-Troubleshooting
-===============
 
 On Windows, if you're seeing an error containing `EPERM` it may be related to spaces in your path. Please see [this issue](https://github.com/zkat/npx/issues/209) for more details.
 
