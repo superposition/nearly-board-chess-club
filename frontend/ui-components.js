@@ -1,4 +1,5 @@
 import React from 'react';
+// import {} fro,m
 
 export function SignInPrompt({greeting, onClick}) {
   return (
@@ -55,5 +56,17 @@ export function EducationalText() {
         To keep learning, check out <a target="_blank" rel="noreferrer" href="https://docs.near.org">the NEAR docs</a> or look through some <a target="_blank" rel="noreferrer" href="https://examples.near.org">example apps</a>.
       </p>
     </>
+  );
+}
+
+export function RoomDetails (){
+  return (
+    <Board/>
+  );
+}
+
+export function Board() {
+  return (
+    <p>Board</p>
   );
 }

@@ -3,7 +3,7 @@ import React from 'react';
 
 import './assets/global.css';
 
-import { EducationalText, SignInPrompt, SignOutButton } from './ui-components';
+import { EducationalText, SignInPrompt, SignOutButton, RoomDetails } from './ui-components';
 
 
 export default function App({ isSignedIn, helloNEAR, wallet }) {
@@ -42,6 +42,9 @@ export default function App({ isSignedIn, helloNEAR, wallet }) {
   return (
     <>
       <SignOutButton accountId={wallet.accountId} onClick={() => wallet.signOut()}/>
+      <br/>
+      <RoomDetails/>
+
       <main className={uiPleaseWait ? 'please-wait' : ''}>
         <h1>
           The contract says: <span className="greeting">{valueFromBlockchain}</span>
