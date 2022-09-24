@@ -1,0 +1,8 @@
+/Users/ericmanganaro/board/nearly-board-chess-club/integration-tests/target/debug/deps/libimpl_trait_for_tuples-2380c14da3b3f780.dylib: /Users/ericmanganaro/.cargo/registry/src/github.com-1ecc6299db9ec823/impl-trait-for-tuples-0.2.2/src/lib.rs /Users/ericmanganaro/.cargo/registry/src/github.com-1ecc6299db9ec823/impl-trait-for-tuples-0.2.2/src/full_automatic.rs /Users/ericmanganaro/.cargo/registry/src/github.com-1ecc6299db9ec823/impl-trait-for-tuples-0.2.2/src/semi_automatic.rs /Users/ericmanganaro/.cargo/registry/src/github.com-1ecc6299db9ec823/impl-trait-for-tuples-0.2.2/src/utils.rs
+
+/Users/ericmanganaro/board/nearly-board-chess-club/integration-tests/target/debug/deps/impl_trait_for_tuples-2380c14da3b3f780.d: /Users/ericmanganaro/.cargo/registry/src/github.com-1ecc6299db9ec823/impl-trait-for-tuples-0.2.2/src/lib.rs /Users/ericmanganaro/.cargo/registry/src/github.com-1ecc6299db9ec823/impl-trait-for-tuples-0.2.2/src/full_automatic.rs /Users/ericmanganaro/.cargo/registry/src/github.com-1ecc6299db9ec823/impl-trait-for-tuples-0.2.2/src/semi_automatic.rs /Users/ericmanganaro/.cargo/registry/src/github.com-1ecc6299db9ec823/impl-trait-for-tuples-0.2.2/src/utils.rs
+
+/Users/ericmanganaro/.cargo/registry/src/github.com-1ecc6299db9ec823/impl-trait-for-tuples-0.2.2/src/lib.rs:
+/Users/ericmanganaro/.cargo/registry/src/github.com-1ecc6299db9ec823/impl-trait-for-tuples-0.2.2/src/full_automatic.rs:
+/Users/ericmanganaro/.cargo/registry/src/github.com-1ecc6299db9ec823/impl-trait-for-tuples-0.2.2/src/semi_automatic.rs:
+/Users/ericmanganaro/.cargo/registry/src/github.com-1ecc6299db9ec823/impl-trait-for-tuples-0.2.2/src/utils.rs:
