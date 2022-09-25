@@ -13,6 +13,7 @@ use near_sdk::{env, log, near_bindgen, require, AccountId, Promise};
 
 // Define the default message
 const STARTING_POSITION: &str = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+const VOTING_PERIOD_INTERVAL: u64 = 30;
 
 enum EndState {
     WHITEWIN,
@@ -42,7 +43,7 @@ impl Default for Contract{
             game_active: true,
             fen_state: STARTING_POSITION.to_string(),
             buyin_amount: 1_000_000_000_000_000_000_000_000,  // 1 near in yoctonear
-            next_period_timestamp: env::block_timestamp() + 600,
+            next_period_timestamp: env::block_timestamp() + VOTING_PERIOD_INTERVAL,
             votes: HashMap::new(),
             voted_this_period: HashSet::new(),
             white_players: HashSet::new(),
@@ -126,7 +127,7 @@ impl Contract {
         // empty voted_this_period set
         self.voted_this_period.clear();
         // set next vote timestamp
-        self.next_period_timestamp = env::block_timestamp() + 600;
+        self.next_period_timestamp = env::block_timestamp() + VOTING_PERIOD_INTERVAL;
 
     }
 
