@@ -7,7 +7,6 @@
  */
 
 use std::collections::{HashMap, HashSet};
-use std::time::{SystemTime, Duration};
 use near_sdk::borsh::{self, BorshDeserialize, BorshSerialize};
 use near_sdk::{env, log, near_bindgen, require, AccountId, Promise};
 
@@ -74,6 +73,14 @@ impl Contract {
         side.insert(player_address);
     }
 
+    pub fn _add_signer_to_white(&mut self) {
+        self.white_players.insert(env::signer_account_id());
+    }
+
+    pub fn _add_signer_to_black(&mut self) {
+        self.black_players.insert(env::signer_account_id());
+    }
+
     // add vote to current period votes
     pub fn cast_vote(&mut self, board_fen: String, vote_fen: String) {
         let player_address = env::signer_account_id();
@@ -85,7 +92,7 @@ impl Contract {
         let players_to_move = match self.fen_state.split(" ").nth(1) {
             Some("w") => &self.white_players,
             Some("b") => &self.black_players,
-            _ => env::panic_str("malformed FEN"),
+            _ => env::panic_str("malformed FEN string"),
         };
         require!(players_to_move.contains(&player_address));
         // add vote to votes
