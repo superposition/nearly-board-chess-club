@@ -10,7 +10,7 @@
     "build:contract": "cd contract && ./build.sh",
     "test": "npm run test:unit && npm run test:integration",
     "test:unit": "cd contract && cargo test",
-    "test:integration": "cd integration-tests && cargo run --example integration-tests \"../contract/target/wasm32-unknown-unknown/release/hello_near.wasm\"",
+    "test:integration": "cd integration-tests && cargo run --example integration-tests \"../contract/target/wasm32-unknown-unknown/release/board_chess_club.wasm\"",
     "postinstall": "cd frontend && npm install && cd .. && echo rs tests && echo rs contract"
   },
   "dependencies": {
