@@ -58,19 +58,28 @@ impl Contract {
         self.fen_state
     }
 
+    fn player_has_stnear(&self, player_address: &AccountId) -> bool { true }
+
     #[payable]
     pub fn add_player(&mut self, player_address: AccountId) {
         // verify that game still in buy-in period
         //require!(self.fen_state.split(" ").last() != Some("1"), "buy-in period is over");
         // transfer buy-in to contract
         //require!(env::attached_deposit() > self.buyin_amount, "send more coins lol");  // using payable function
+        require!(self.player_has_stnear(&player_address));
         // add player to random color
-        let side = match env::block_timestamp_ms() & 1 {  // good enough for government work
-            0 => &mut self.white_players,
-            1 => &mut self.black_players,
-            _ => unreachable!(),
-        };
-        side.insert(player_address);
+        if self.white_players.is_empty() {
+            self.white_players.insert(player_address);
+        } else if self.black_players.is_empty() {
+            self.black_players.insert(player_address);
+        } else {
+            let side = match env::block_timestamp_ms() & 1 {  // good enough for government work
+                0 => &mut self.white_players,
+                1 => &mut self.black_players,
+                _ => unreachable!(),
+            };
+            side.insert(player_address);
+        }
     }
 
     // add vote to current period votes
