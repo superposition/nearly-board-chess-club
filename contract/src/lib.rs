@@ -21,6 +21,7 @@ enum EndState {
     DRAW,
 }
 
+// TODO: get timestamp from near_sdk?
 fn unix_epoch_duration() -> Duration {
     SystemTime::now().duration_since(SystemTime::UNIX_EPOCH).unwrap()
 }
@@ -58,6 +59,10 @@ impl Default for Contract{
 // Implement the contract structure
 #[near_bindgen]
 impl Contract {
+    pub fn get_fen(self) -> String {
+        self.fen_state
+    }
+
     #[payable]
     pub fn add_player(&mut self, player_address: AccountId) {
         // verify that game still in buy-in period
@@ -76,10 +81,10 @@ impl Contract {
     // add vote to current period votes
     pub fn cast_vote(&mut self, board_fen: String, vote_fen: String) {
         let player_address = env::signer_account_id();
-        // verify player hasn't voted this period
-        require!(!self.voted_this_period.contains(&player_address));
         // verify voter has correct board state
         require!(board_fen == self.fen_state);
+        // verify player hasn't voted this period
+        require!(!self.voted_this_period.contains(&player_address));
         // verify player in color to move
         let players_to_move = match self.fen_state.split(" ").nth(1) {
             Some("w") => &self.white_players,
@@ -116,6 +121,7 @@ impl Contract {
         // empty voted_this_period set
         self.voted_this_period.clear();
         // set next vote timestamp
+        self.next_period_timestamp = unix_epoch_duration().as_secs() + 600;
 
         todo!();
     }
@@ -124,6 +130,7 @@ impl Contract {
         // mark game as over
         self.game_active = false;
         // take 5% out of pot for dao
+        todo!();
         // distribute remaining pot to winners
         todo!();
     }
