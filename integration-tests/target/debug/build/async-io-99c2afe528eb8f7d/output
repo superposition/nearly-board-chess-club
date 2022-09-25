@@ -1,1 +1,0 @@
-cargo:rustc-cfg=async_io_no_io_safety
