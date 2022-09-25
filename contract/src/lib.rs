@@ -88,6 +88,8 @@ impl Contract {
         let player_address = env::signer_account_id();
         // verify voter has correct board state
         require!(board_fen == self.fen_state, "out of date board state");
+        // verify player has voting rights
+        require!(self.white_players.contains(&player_address) || self.black_players.contains(&player_address), "player can't vote in this game");
         // verify player hasn't voted this period
         require!(!self.voted_this_period.contains(&player_address), "player already voted this period");
         // verify player in color to move
@@ -96,7 +98,7 @@ impl Contract {
             Some("b") => &self.black_players,
             _ => env::panic_str("malformed FEN"),
         };
-        require!(players_to_move.contains(&player_address), "player can't vote right now");
+        require!(players_to_move.contains(&player_address), "it's not your turn");
         // add vote to votes
         *self.votes.entry(vote_fen).or_insert(0) += 1;
     }
