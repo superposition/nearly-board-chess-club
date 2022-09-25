@@ -12,18 +12,20 @@ use near_sdk::borsh::{self, BorshDeserialize, BorshSerialize};
 use near_sdk::{log, near_bindgen, AccountId};
 
 // Define the default message
-const DEFAULT_MESSAGE: &str = "Hello";
+const STARTING_POSITION: &str = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 
-pub enum Color {
-    BLACK,
-    WHITE,
+enum EndState {
+    WHITEWIN,
+    BLACKWIN,
+    STALEMATE,
+    DRAW,
 }
 
 // Define the contract structure
 #[near_bindgen]
 #[derive(BorshDeserialize, BorshSerialize)]
 pub struct Contract {
-    message: String,
+    game_active: bool,
     fen_state: String,
     next_period_timestamp: u64,
     votes: HashMap<String, u64>,
@@ -36,8 +38,8 @@ pub struct Contract {
 impl Default for Contract{
     fn default() -> Self{
         Self {
-            message: DEFAULT_MESSAGE.to_string(),
-            fen_state: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1".to_string(),
+            game_active: true,
+            fen_state: STARTING_POSITION.to_string(),
             next_period_timestamp: SystemTime::now().duration_since(SystemTime::UNIX_EPOCH).unwrap().as_secs() + 600,
             votes: HashMap::new(),
             voted_this_period: HashSet::new(),
@@ -61,7 +63,7 @@ impl Contract {
             _ => unreachable!(),
         };
         side.insert(player_address);
-        todo!()
+        todo!();
     }
 
     // add vote to current period votes
@@ -83,27 +85,44 @@ impl Contract {
 
     // verify next vote timestamp is in the past, select winnning vote and update state
     pub fn tally_votes(&mut self) {
-        todo!()
+        // find highest voted fen
+        let mut curr_most_votes = 0;
+        let mut winning_fen = &self.fen_state;
+        for (key, val) in &self.votes {
+            if *val > curr_most_votes {
+                curr_most_votes = *val;
+                winning_fen = key;
+            }
+        }
+        // parse for end game states
+        // empty votes map
+        self.votes.clear();
+        // empty voted_this_period map
+        self.voted_this_period.clear();
+        // set next vote timestamp
+
+        todo!();
     }
 
-    fn finish_game(&mut self, winner: Color) {
+    fn finish_game(&mut self, end_state: EndState) {
         // mark game as over
         // take 5% out of pot for dao
         // distribute remaining pot to winners
-        todo!()
+        todo!();
+        self.game_active = false
     }
 
-    // Public method - returns the greeting saved, defaulting to DEFAULT_MESSAGE
-    pub fn get_greeting(&self) -> String {
-        return self.message.clone();
-    }
+    // // Public method - returns the greeting saved, defaulting to DEFAULT_MESSAGE
+    // pub fn get_greeting(&self) -> String {
+    //     return self.message.clone();
+    // }
 
-    // Public method - accepts a greeting, such as "howdy", and records it
-    pub fn set_greeting(&mut self, message: String) {
-        // Use env::log to record logs permanently to the blockchain!
-        log!("Saving greeting {}", message);
-        self.message = message;
-    }
+    // // Public method - accepts a greeting, such as "howdy", and records it
+    // pub fn set_greeting(&mut self, message: String) {
+    //     // Use env::log to record logs permanently to the blockchain!
+    //     log!("Saving greeting {}", message);
+    //     self.message = message;
+    // }
 }
 
 /*
@@ -112,25 +131,25 @@ impl Contract {
  */
 #[cfg(test)]
 mod tests {
-    use super::*;
+    // use super::*;
 
-    #[test]
-    fn get_default_greeting() {
-        let contract = Contract::default();
-        // this test did not call set_greeting so should return the default "Hello" greeting
-        assert_eq!(
-            contract.get_greeting(),
-            "Hello".to_string()
-        );
-    }
+    // #[test]
+    // fn get_default_greeting() {
+    //     let contract = Contract::default();
+    //     // this test did not call set_greeting so should return the default "Hello" greeting
+    //     assert_eq!(
+    //         contract.get_greeting(),
+    //         "Hello".to_string()
+    //     );
+    // }
 
-    #[test]
-    fn set_then_get_greeting() {
-        let mut contract = Contract::default();
-        contract.set_greeting("howdy".to_string());
-        assert_eq!(
-            contract.get_greeting(),
-            "howdy".to_string()
-        );
-    }
+    // #[test]
+    // fn set_then_get_greeting() {
+    //     let mut contract = Contract::default();
+    //     contract.set_greeting("howdy".to_string());
+    //     assert_eq!(
+    //         contract.get_greeting(),
+    //         "howdy".to_string()
+    //     );
+    // }
 }
