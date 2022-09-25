@@ -27,6 +27,7 @@ enum EndState {
 pub struct Contract {
     game_active: bool,
     fen_state: String,
+    buyin_amount: u128,
     next_period_timestamp: u64,
     votes: HashMap<String, u64>,
     voted_this_period: HashSet<AccountId>,
@@ -40,6 +41,7 @@ impl Default for Contract{
         Self {
             game_active: true,
             fen_state: STARTING_POSITION.to_string(),
+            buyin_amount: 1_000_000_000_000_000_000_000_000,  // 1 near in yoctonear
             next_period_timestamp: SystemTime::now().duration_since(SystemTime::UNIX_EPOCH).unwrap().as_secs() + 600,
             votes: HashMap::new(),
             voted_this_period: HashSet::new(),
@@ -52,11 +54,12 @@ impl Default for Contract{
 // Implement the contract structure
 #[near_bindgen]
 impl Contract {
+    #[payable]
     pub fn add_player(&mut self, player_address: AccountId) {
         // verify that game still in buy-in period
         if self.fen_state.split(" ").last() != Some("1") { return; }
         // transfer buy-in to contract
-        todo!();
+        assert!(env::attached_deposit() > self.buyin_amount);  // using payable function
         // add player to random color
         let timestamp = SystemTime::now().duration_since(SystemTime::UNIX_EPOCH).unwrap();
         let side = match timestamp.as_nanos() & 1 {  // good enough for government work
