@@ -89,7 +89,7 @@ export function RoomDetails (){
     if (chess.move({ from, to, promotion: "x" })) {
       setFen(chess.fen())
       setLastMove([from, to])
-      setTimeout(randomMove, 500)
+      //setTimeout(randomMove, 500)
     }
   }
 
@@ -100,7 +100,7 @@ export function RoomDetails (){
     setFen(chess.fen())
     setLastMove([from, to])
     setSelectVisible(false)
-    setTimeout(randomMove, 500)
+    //setTimeout(randomMove, 500)
   }
 
   const turnColor = () => {
@@ -114,9 +114,8 @@ export function RoomDetails (){
       if (ms.length) dests.set(s, ms.map(m => m.to))
     })
     return {
-      free: false,
+      free: true,
       dests,
-      color: "white"
     }
   }
 

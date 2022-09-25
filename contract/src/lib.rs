@@ -61,9 +61,9 @@ impl Contract {
     #[payable]
     pub fn add_player(&mut self, player_address: AccountId) {
         // verify that game still in buy-in period
-        require!(self.fen_state.split(" ").last() != Some("1"), "buy-in period is over");
+        //require!(self.fen_state.split(" ").last() != Some("1"), "buy-in period is over");
         // transfer buy-in to contract
-        require!(env::attached_deposit() > self.buyin_amount, "send more coins lol");  // using payable function
+        //require!(env::attached_deposit() > self.buyin_amount, "send more coins lol");  // using payable function
         // add player to random color
         let side = match env::block_timestamp_ms() & 1 {  // good enough for government work
             0 => &mut self.white_players,
@@ -118,7 +118,6 @@ impl Contract {
         // set next vote timestamp
         self.next_period_timestamp = env::block_timestamp() + 600;
 
-        todo!();
     }
 
     // fn finish_game(&mut self, end_state: EndState) {

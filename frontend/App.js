@@ -4,21 +4,23 @@ import React from 'react';
 import './assets/global.css';
 
 import { EducationalText, SignInPrompt, SignOutButton, RoomDetails } from './ui-components';
+import { boardChessBoard } from './near-interface';
 
 
-export default function App({ isSignedIn, helloNEAR, wallet }) {
+export default function App({ isSignedIn, bcc, wallet }) {
   const [valueFromBlockchain, setValueFromBlockchain] = React.useState();
 
   const [uiPleaseWait, setUiPleaseWait] = React.useState(true);
 
   // Get blockchian state once on component load
   React.useEffect(() => {
-    helloNEAR.getGreeting()
+    bcc.get_fen()
       .then(setValueFromBlockchain)
       .catch(alert)
       .finally(() => {
         setUiPleaseWait(false);
       });
+    
   }, []);
 
   /// If user not signed-in with wallet - show prompt
@@ -31,12 +33,12 @@ export default function App({ isSignedIn, helloNEAR, wallet }) {
     e.preventDefault();
     setUiPleaseWait(true);
     const { greetingInput } = e.target.elements;
-    helloNEAR.setGreeting(greetingInput.value)
-      .then(async () => {return helloNEAR.getGreeting();})
-      .then(setValueFromBlockchain)
-      .finally(() => {
-        setUiPleaseWait(false);
-      });
+    // bcc.setGreeting(greetingInput.value)
+    //   .then(async () => {return helloNEAR.getGreeting();})
+    //   .then(setValueFromBlockchain)
+    //   .finally(() => {
+    //     setUiPleaseWait(false);
+    //   });
   }
 
   return (
@@ -47,7 +49,6 @@ export default function App({ isSignedIn, helloNEAR, wallet }) {
       <br/>
       <br/>
       <RoomDetails/>
-
 
       <main className={uiPleaseWait ? 'please-wait' : ''}>
         <h1>

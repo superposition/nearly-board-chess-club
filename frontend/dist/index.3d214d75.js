@@ -2914,11 +2914,11 @@ var _nearWallet = require("./near-wallet");
 // When creating the wallet you can optionally ask to create an access key
 // Having the key enables to call non-payable methods without interrupting the user to sign
 const wallet = new (0, _nearWallet.Wallet)({
-    createAccessKeyFor: "dev-1664079979715-73545326054269"
+    createAccessKeyFor: "dev-1664082817361-97823679308953"
 });
 // Abstract the logic of interacting with the contract to simplify your flow
-const helloNEAR = new (0, _nearInterface.HelloNEAR)({
-    contractId: "dev-1664079979715-73545326054269",
+const bcc = new (0, _nearInterface.boardChessBoard)({
+    contractId: "dev-1664082817361-97823679308953",
     walletToUse: wallet
 });
 // Setup on page load
@@ -2926,7 +2926,7 @@ window.onload = async ()=>{
     const isSignedIn = await wallet.startUp();
     (0, _reactDomDefault.default).render(/*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _appDefault.default), {
         isSignedIn: isSignedIn,
-        helloNEAR: helloNEAR,
+        bcc: bcc,
         wallet: wallet
     }, void 0, false, {
         fileName: "index.js",
@@ -27087,14 +27087,15 @@ var _react = require("react");
 var _reactDefault = parcelHelpers.interopDefault(_react);
 var _globalCss = require("./assets/global.css");
 var _uiComponents = require("./ui-components");
+var _nearInterface = require("./near-interface");
 var _s = $RefreshSig$();
-function App({ isSignedIn , helloNEAR , wallet  }) {
+function App({ isSignedIn , bcc , wallet  }) {
     _s();
     const [valueFromBlockchain, setValueFromBlockchain] = (0, _reactDefault.default).useState();
     const [uiPleaseWait, setUiPleaseWait] = (0, _reactDefault.default).useState(true);
     // Get blockchian state once on component load
     (0, _reactDefault.default).useEffect(()=>{
-        helloNEAR.getGreeting().then(setValueFromBlockchain).catch(alert).finally(()=>{
+        bcc.get_fen().then(setValueFromBlockchain).catch(alert).finally(()=>{
             setUiPleaseWait(false);
         });
     }, []);
@@ -27105,40 +27106,31 @@ function App({ isSignedIn , helloNEAR , wallet  }) {
         onClick: ()=>wallet.signIn()
     }, void 0, false, {
         fileName: "App.js",
-        lineNumber: 27,
+        lineNumber: 29,
         columnNumber: 12
     }, this);
     function changeGreeting(e) {
         e.preventDefault();
         setUiPleaseWait(true);
         const { greetingInput  } = e.target.elements;
-        helloNEAR.setGreeting(greetingInput.value).then(async ()=>{
-            return helloNEAR.getGreeting();
-        }).then(setValueFromBlockchain).finally(()=>{
-            setUiPleaseWait(false);
-        });
+    // bcc.setGreeting(greetingInput.value)
+    //   .then(async () => {return helloNEAR.getGreeting();})
+    //   .then(setValueFromBlockchain)
+    //   .finally(() => {
+    //     setUiPleaseWait(false);
+    //   });
     }
     return /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _jsxDevRuntime.Fragment), {
         children: [
             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("br", {}, void 0, false, {
                 fileName: "App.js",
-                lineNumber: 44,
+                lineNumber: 46,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _uiComponents.SignOutButton), {
                 accountId: wallet.accountId,
                 onClick: ()=>wallet.signOut()
             }, void 0, false, {
-                fileName: "App.js",
-                lineNumber: 45,
-                columnNumber: 7
-            }, this),
-            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("br", {}, void 0, false, {
-                fileName: "App.js",
-                lineNumber: 46,
-                columnNumber: 7
-            }, this),
-            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("br", {}, void 0, false, {
                 fileName: "App.js",
                 lineNumber: 47,
                 columnNumber: 7
@@ -27148,9 +27140,19 @@ function App({ isSignedIn , helloNEAR , wallet  }) {
                 lineNumber: 48,
                 columnNumber: 7
             }, this),
-            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _uiComponents.RoomDetails), {}, void 0, false, {
+            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("br", {}, void 0, false, {
                 fileName: "App.js",
                 lineNumber: 49,
+                columnNumber: 7
+            }, this),
+            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("br", {}, void 0, false, {
+                fileName: "App.js",
+                lineNumber: 50,
+                columnNumber: 7
+            }, this),
+            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _uiComponents.RoomDetails), {}, void 0, false, {
+                fileName: "App.js",
+                lineNumber: 51,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("main", {
@@ -27164,13 +27166,13 @@ function App({ isSignedIn , helloNEAR , wallet  }) {
                                 children: valueFromBlockchain
                             }, void 0, false, {
                                 fileName: "App.js",
-                                lineNumber: 54,
+                                lineNumber: 55,
                                 columnNumber: 30
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "App.js",
-                        lineNumber: 53,
+                        lineNumber: 54,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("form", {
@@ -27181,7 +27183,7 @@ function App({ isSignedIn , helloNEAR , wallet  }) {
                                 children: "Change greeting:"
                             }, void 0, false, {
                                 fileName: "App.js",
-                                lineNumber: 57,
+                                lineNumber: 58,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
@@ -27192,7 +27194,7 @@ function App({ isSignedIn , helloNEAR , wallet  }) {
                                         id: "greetingInput"
                                     }, void 0, false, {
                                         fileName: "App.js",
-                                        lineNumber: 59,
+                                        lineNumber: 60,
                                         columnNumber: 13
                                     }, this),
                                     /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("button", {
@@ -27201,38 +27203,38 @@ function App({ isSignedIn , helloNEAR , wallet  }) {
                                                 children: "Save"
                                             }, void 0, false, {
                                                 fileName: "App.js",
-                                                lineNumber: 65,
+                                                lineNumber: 66,
                                                 columnNumber: 15
                                             }, this),
                                             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
                                                 className: "loader"
                                             }, void 0, false, {
                                                 fileName: "App.js",
-                                                lineNumber: 66,
+                                                lineNumber: 67,
                                                 columnNumber: 15
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "App.js",
-                                        lineNumber: 64,
+                                        lineNumber: 65,
                                         columnNumber: 13
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "App.js",
-                                lineNumber: 58,
+                                lineNumber: 59,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "App.js",
-                        lineNumber: 56,
+                        lineNumber: 57,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "App.js",
-                lineNumber: 52,
+                lineNumber: 53,
                 columnNumber: 7
             }, this)
         ]
@@ -27249,7 +27251,7 @@ $RefreshReg$(_c, "App");
   window.$RefreshReg$ = prevRefreshReg;
   window.$RefreshSig$ = prevRefreshSig;
 }
-},{"react/jsx-dev-runtime":"iTorj","regenerator-runtime/runtime":"dXNgZ","react":"21dqq","./assets/global.css":"1hP5v","./ui-components":"4LIXu","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js":"km3Ru"}],"dXNgZ":[function(require,module,exports) {
+},{"react/jsx-dev-runtime":"iTorj","regenerator-runtime/runtime":"dXNgZ","react":"21dqq","./assets/global.css":"1hP5v","./ui-components":"4LIXu","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js":"km3Ru","./near-interface":"aahG8"}],"dXNgZ":[function(require,module,exports) {
 /**
  * Copyright (c) 2014-present, Facebook, Inc.
  *
@@ -28127,7 +28129,7 @@ function RoomDetails() {
                 from,
                 to
             ]);
-            setTimeout(randomMove, 500);
+        //setTimeout(randomMove, 500)
         }
     };
     const promotion = (e)=>{
@@ -28144,7 +28146,7 @@ function RoomDetails() {
             to
         ]);
         setSelectVisible(false);
-        setTimeout(randomMove, 500);
+    //setTimeout(randomMove, 500)
     };
     const turnColor = ()=>{
         return chess.turn() === "w" ? "white" : "black";
@@ -28159,9 +28161,8 @@ function RoomDetails() {
             if (ms.length) dests.set(s, ms.map((m)=>m.to));
         });
         return {
-            free: false,
-            dests,
-            color: "white"
+            free: true,
+            dests
         };
     };
     return /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _reactChessgroundDefault.default), {
@@ -28177,7 +28178,7 @@ function RoomDetails() {
         }
     }, void 0, false, {
         fileName: "ui-components.js",
-        lineNumber: 125,
+        lineNumber: 124,
         columnNumber: 5
     }, this);
 }
@@ -28188,7 +28189,7 @@ function Board() {
         children: " how"
     }, void 0, false, {
         fileName: "ui-components.js",
-        lineNumber: 140,
+        lineNumber: 139,
         columnNumber: 5
     }, this);
 }
@@ -32911,25 +32912,40 @@ function registerExportsForReactRefresh(module1) {
 },{"react-refresh/runtime":"786KC"}],"aahG8":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
-/* Talking with a contract often involves transforming data, we recommend you to encapsulate that logic into a class */ parcelHelpers.export(exports, "HelloNEAR", ()=>HelloNEAR);
-class HelloNEAR {
+/* Talking with a contract often involves transforming data, we recommend you to encapsulate that logic into a class */ parcelHelpers.export(exports, "boardChessBoard", ()=>boardChessBoard);
+class boardChessBoard {
     constructor({ contractId , walletToUse  }){
         this.contractId = contractId;
         this.wallet = walletToUse;
     }
-    async getGreeting() {
+    async get_fen() {
         return await this.wallet.viewMethod({
             contractId: this.contractId,
-            method: "get_greeting"
+            method: "get_fen"
         });
     }
-    async setGreeting(greeting) {
+    async add_player() {
         return await this.wallet.callMethod({
             contractId: this.contractId,
-            method: "set_greeting",
+            method: "add_player",
             args: {
-                message: greeting
+                player_address: this.wallet.accountId
             }
+        });
+    }
+    async cast_vote(fen) {
+        return await this.wallet.callMethod({
+            contractId: this.contractId,
+            method: "add_player",
+            args: {
+                board_fen: fen
+            }
+        });
+    }
+    async tally_votes() {
+        return await this.wallet.callMethod({
+            contractId: this.contractId,
+            method: "tally_votes"
         });
     }
 }
