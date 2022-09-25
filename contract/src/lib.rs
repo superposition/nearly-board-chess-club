@@ -9,8 +9,7 @@
 use std::collections::{HashMap, HashSet};
 use std::time::SystemTime;
 use near_sdk::borsh::{self, BorshDeserialize, BorshSerialize};
-use near_sdk::{log, near_bindgen, AccountId};
-use near_sdk::env::signer_account_id;
+use near_sdk::{env, log, near_bindgen, AccountId, Promise};
 
 // Define the default message
 const STARTING_POSITION: &str = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
@@ -55,8 +54,8 @@ impl Default for Contract{
 impl Contract {
     pub fn add_player(&mut self, player_address: AccountId) {
         // verify that game still in buy-in period
-        todo!();
-        // transfer buy-in from player
+        if self.fen_state.split(" ").last() != Some("1") { return; }
+        // transfer buy-in to contract
         todo!();
         // add player to random color
         let timestamp = SystemTime::now().duration_since(SystemTime::UNIX_EPOCH).unwrap();
@@ -66,18 +65,17 @@ impl Contract {
             _ => unreachable!(),
         };
         side.insert(player_address);
-        todo!();
     }
 
     // add vote to current period votes
     pub fn cast_vote(&mut self, board_fen: String, vote_fen: String) {
         // verify player in color to move
-        let players_to_move = match self.fen_state.split(" ").nth(1).expect("couldn't parse internal FEN string") {
-            "w" => &self.white_players,
-            "b" => &self.black_players,
+        let players_to_move = match self.fen_state.split(" ").nth(1) {
+            Some("w") => &self.white_players,
+            Some("b") => &self.black_players,
             _ => return,
         };
-        let player_address = signer_account_id();
+        let player_address = env::signer_account_id();
         if !players_to_move.contains(&player_address) || self.voted_this_period.contains(&player_address) {
             return;
         }
@@ -99,10 +97,15 @@ impl Contract {
             }
         }
         // parse for end game states
-        todo!();
+        match winning_fen.split(" ").last() {
+            Some("RESIGN") => { todo!(); },
+            Some("OFFER_DRAW") => { todo!(); },
+            Some("other stuff") => { todo!(); },
+            _ => (),
+        };
         // empty votes map
         self.votes.clear();
-        // empty voted_this_period map
+        // empty voted_this_period set
         self.voted_this_period.clear();
         // set next vote timestamp
 
@@ -111,10 +114,10 @@ impl Contract {
 
     fn finish_game(&mut self, end_state: EndState) {
         // mark game as over
+        self.game_active = false;
         // take 5% out of pot for dao
         // distribute remaining pot to winners
         todo!();
-        self.game_active = false
     }
 
     // // Public method - returns the greeting saved, defaulting to DEFAULT_MESSAGE
