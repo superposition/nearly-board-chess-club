@@ -10,6 +10,7 @@ use std::collections::{HashMap, HashSet};
 use std::time::SystemTime;
 use near_sdk::borsh::{self, BorshDeserialize, BorshSerialize};
 use near_sdk::{log, near_bindgen, AccountId};
+use near_sdk::env::signer_account_id;
 
 // Define the default message
 const STARTING_POSITION: &str = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
@@ -54,10 +55,12 @@ impl Default for Contract{
 impl Contract {
     pub fn add_player(&mut self, player_address: AccountId) {
         // verify that game still in buy-in period
+        todo!();
         // transfer buy-in from player
+        todo!();
         // add player to random color
         let timestamp = SystemTime::now().duration_since(SystemTime::UNIX_EPOCH).unwrap();
-        let side = match timestamp.as_nanos() & 1 { // good enough for government work
+        let side = match timestamp.as_nanos() & 1 {  // good enough for government work
             0 => &mut self.white_players,
             1 => &mut self.black_players,
             _ => unreachable!(),
@@ -67,13 +70,14 @@ impl Contract {
     }
 
     // add vote to current period votes
-    pub fn cast_vote(&mut self, player_address: AccountId, board_fen: String, vote_fen: String) {
+    pub fn cast_vote(&mut self, board_fen: String, vote_fen: String) {
         // verify player in color to move
         let players_to_move = match self.fen_state.split(" ").nth(1).expect("couldn't parse internal FEN string") {
             "w" => &self.white_players,
             "b" => &self.black_players,
             _ => return,
         };
+        let player_address = signer_account_id();
         if !players_to_move.contains(&player_address) || self.voted_this_period.contains(&player_address) {
             return;
         }
@@ -95,6 +99,7 @@ impl Contract {
             }
         }
         // parse for end game states
+        todo!();
         // empty votes map
         self.votes.clear();
         // empty voted_this_period map
