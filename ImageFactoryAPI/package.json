@@ -1,0 +1,26 @@
+{
+  "name": "imagefactoryapi",
+  "version": "1.0.0",
+  "description": "creates a unique image and uploads it to nft.storage and returns CID",
+  "main": "main.js",
+  "dependencies": {
+    "canvas": "^2.10.1",
+    "express": "^4.18.1",
+    "fetch": "^1.1.0",
+    "nft.storage": "^7.0.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "node main.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/superposition/nearly-board-chess-club/tree/main/ImageFactoryAPI"
+  },
+  "keywords": [
+    "Chess",
+    "nft"
+  ],
+  "author": "Mina R. Eskandar",
+  "license": "MIT"
+}

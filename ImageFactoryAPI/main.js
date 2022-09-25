@@ -65,7 +65,7 @@ function createPNG(res){
             let blob = new Blob([buffer])
             const cid = await client.storeBlob(blob)
             console.log(cid)
-            //res.send(cid)
+            res.send(cid)
         })
     })
 
@@ -80,7 +80,7 @@ app.get('/new',async (req,res)=>{
 
 
     let cid = ''
-    res.send(`<img src="http://localhost:${port}/image.png">`)
+    //res.send(`<img src="http://localhost:${port}/image.png">`)
 })
 
 
