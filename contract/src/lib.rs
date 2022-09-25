@@ -7,12 +7,12 @@
  */
 
 use std::collections::{HashMap, HashSet};
-use std::time::{SystemTime, Duration};
 use near_sdk::borsh::{self, BorshDeserialize, BorshSerialize};
 use near_sdk::{env, log, near_bindgen, require, AccountId, Promise};
 
 // Define the default message
 const STARTING_POSITION: &str = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+const VOTE_PERIOD_DURATION: u64 = 30;
 
 enum EndState {
     WHITEWIN,
@@ -42,7 +42,7 @@ impl Default for Contract{
             game_active: true,
             fen_state: STARTING_POSITION.to_string(),
             buyin_amount: 1_000_000_000_000_000_000_000_000,  // 1 near in yoctonear
-            next_period_timestamp: env::block_timestamp() + 600,
+            next_period_timestamp: env::block_timestamp() + VOTE_PERIOD_DURATION,
             votes: HashMap::new(),
             voted_this_period: HashSet::new(),
             white_players: HashSet::new(),
@@ -61,9 +61,9 @@ impl Contract {
     #[payable]
     pub fn add_player(&mut self, player_address: AccountId) {
         // verify that game still in buy-in period
-        require!(self.fen_state.split(" ").last() != Some("1"), "buy-in period is over");
-        // transfer buy-in to contract
-        require!(env::attached_deposit() > self.buyin_amount, "send more coins lol");  // using payable function
+        require!(self.fen_state.split(" ").last() == Some("1"), "buy-in period is over");
+        // // transfer buy-in to contract
+        // require!(env::attached_deposit() > self.buyin_amount, "send more coins lol");  // using payable function
         // add player to random color
         let side = match env::block_timestamp_ms() & 1 {  // good enough for government work
             0 => &mut self.white_players,
@@ -71,6 +71,14 @@ impl Contract {
             _ => unreachable!(),
         };
         side.insert(player_address);
+    }
+
+    pub fn _add_signer_to_white(&mut self) {
+        self.white_players.insert(env::signer_account_id());
+    }
+
+    pub fn _add_signer_to_black(&mut self) {
+        self.black_players.insert(env::signer_account_id());
     }
 
     // add vote to current period votes
@@ -84,7 +92,7 @@ impl Contract {
         let players_to_move = match self.fen_state.split(" ").nth(1) {
             Some("w") => &self.white_players,
             Some("b") => &self.black_players,
-            _ => env::panic_str("malformed FEN"),
+            _ => env::panic_str("malformed FEN string"),
         };
         require!(players_to_move.contains(&player_address));
         // add vote to votes
@@ -111,14 +119,14 @@ impl Contract {
         //     Some("other stuff") => { todo!(); },
         //     _ => (),
         // };
+        // set new fen
+        self.fen_state = winning_fen.to_owned();
         // empty votes map
         self.votes.clear();
         // empty voted_this_period set
         self.voted_this_period.clear();
         // set next vote timestamp
-        self.next_period_timestamp = env::block_timestamp() + 600;
-
-        todo!();
+        self.next_period_timestamp = env::block_timestamp() + VOTE_PERIOD_DURATION;
     }
 
     // fn finish_game(&mut self, end_state: EndState) {
@@ -147,27 +155,60 @@ impl Contract {
  * The rest of this file holds the inline tests for the code above
  * Learn more about Rust tests: https://doc.rust-lang.org/book/ch11-01-writing-tests.html
  */
+#[cfg(not(target_arch = "wasm32"))]
 #[cfg(test)]
 mod tests {
-    // use super::*;
+    use super::*;
+    use near_sdk::{MockedBlockchain, EpochHeight};
+    use near_sdk::{testing_env, VMContext};
+    use std::collections::HashMap;
+    use std::iter::FromIterator;
 
-    // #[test]
-    // fn get_default_greeting() {
-    //     let contract = Contract::default();
-    //     // this test did not call set_greeting so should return the default "Hello" greeting
-    //     assert_eq!(
-    //         contract.get_greeting(),
-    //         "Hello".to_string()
-    //     );
+    // fn get_context(predecessor_account_id: AccountId) -> VMContext {
+    //     get_context_with_epoch_height(predecessor_account_id, 0)
+    // }
+
+    // fn get_context_with_epoch_height(
+    //     predecessor_account_id: AccountId,
+    //     epoch_height: EpochHeight,
+    // ) -> VMContext {
+    //     VMContext {
+    //         current_account_id: near_sdk::AccountId("alice_near".to_string()),
+    //         signer_account_id: near_sdk::AccountId("bob_near".to_string()),
+    //         signer_account_pk: vec![0, 1, 2],
+    //         predecessor_account_id,
+    //         input: vec![],
+    //         block_index: 0,
+    //         block_timestamp: 0,
+    //         account_balance: 0,
+    //         account_locked_balance: 0,
+    //         storage_usage: 1000,
+    //         attached_deposit: 0,
+    //         prepaid_gas: near_sdk::Gas(2 * 10u64.pow(14)),
+    //         random_seed: vec![0, 1, 2],
+    //         is_view: false,
+    //         output_data_receivers: vec![],
+    //         epoch_height,
+    //         view_config: todo!(),
+    //     }
     // }
 
     // #[test]
-    // fn set_then_get_greeting() {
-    //     let mut contract = Contract::default();
-    //     contract.set_greeting("howdy".to_string());
-    //     assert_eq!(
-    //         contract.get_greeting(),
-    //         "howdy".to_string()
-    //     );
+    // // test_add_player
+    // fn test_add_player() {
+    //     let context = get_context("bob.near".to_string());
+
+    //     let side = match unix_epoch_duration().as_nanos() & 1 {  // good enough for government work
+    //         0 => &mut self.white_players,
+    //         1 => &mut self.black_players,
+    //         _ => unreachable!(),
+    //     };
+
+    //     assert_eq!("bob.near".to_string());
+
     // }
+
+    
+
+
 }
