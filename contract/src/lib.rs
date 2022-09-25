@@ -7,9 +7,9 @@
  */
 
 use std::collections::{HashMap, HashSet};
-use std::time::SystemTime;
+use std::time::{SystemTime, Duration};
 use near_sdk::borsh::{self, BorshDeserialize, BorshSerialize};
-use near_sdk::{env, log, near_bindgen, AccountId, Promise};
+use near_sdk::{env, log, near_bindgen, require, AccountId, Promise};
 
 // Define the default message
 const STARTING_POSITION: &str = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
@@ -19,6 +19,10 @@ enum EndState {
     BLACKWIN,
     STALEMATE,
     DRAW,
+}
+
+fn unix_epoch_duration() -> Duration {
+    SystemTime::now().duration_since(SystemTime::UNIX_EPOCH).unwrap()
 }
 
 // Define the contract structure
@@ -42,7 +46,7 @@ impl Default for Contract{
             game_active: true,
             fen_state: STARTING_POSITION.to_string(),
             buyin_amount: 1_000_000_000_000_000_000_000_000,  // 1 near in yoctonear
-            next_period_timestamp: SystemTime::now().duration_since(SystemTime::UNIX_EPOCH).unwrap().as_secs() + 600,
+            next_period_timestamp: unix_epoch_duration().as_secs() + 600,
             votes: HashMap::new(),
             voted_this_period: HashSet::new(),
             white_players: HashSet::new(),
@@ -57,12 +61,11 @@ impl Contract {
     #[payable]
     pub fn add_player(&mut self, player_address: AccountId) {
         // verify that game still in buy-in period
-        if self.fen_state.split(" ").last() != Some("1") { return; }
+        require!(self.fen_state.split(" ").last() != Some("1"), "buy-in period is over");
         // transfer buy-in to contract
-        assert!(env::attached_deposit() > self.buyin_amount);  // using payable function
+        require!(env::attached_deposit() > self.buyin_amount, "send more coins lol");  // using payable function
         // add player to random color
-        let timestamp = SystemTime::now().duration_since(SystemTime::UNIX_EPOCH).unwrap();
-        let side = match timestamp.as_nanos() & 1 {  // good enough for government work
+        let side = match unix_epoch_duration().as_nanos() & 1 {  // good enough for government work
             0 => &mut self.white_players,
             1 => &mut self.black_players,
             _ => unreachable!(),
@@ -72,24 +75,26 @@ impl Contract {
 
     // add vote to current period votes
     pub fn cast_vote(&mut self, board_fen: String, vote_fen: String) {
+        let player_address = env::signer_account_id();
+        // verify player hasn't voted this period
+        require!(!self.voted_this_period.contains(&player_address));
+        // verify voter has correct board state
+        require!(board_fen == self.fen_state);
         // verify player in color to move
         let players_to_move = match self.fen_state.split(" ").nth(1) {
             Some("w") => &self.white_players,
             Some("b") => &self.black_players,
-            _ => return,
+            _ => env::panic_str("malformed FEN"),
         };
-        let player_address = env::signer_account_id();
-        if !players_to_move.contains(&player_address) || self.voted_this_period.contains(&player_address) {
-            return;
-        }
-        // verify voter has correct board state
-        if board_fen != self.fen_state { return; }
+        require!(players_to_move.contains(&player_address));
         // add vote to votes
         *self.votes.entry(vote_fen).or_insert(0) += 1;
     }
 
     // verify next vote timestamp is in the past, select winnning vote and update state
     pub fn tally_votes(&mut self) {
+        // verify next vote timestamp is in the past
+        require!(unix_epoch_duration().as_secs() > self.next_period_timestamp);
         // find highest voted fen
         let mut curr_most_votes = 0;
         let mut winning_fen = &self.fen_state;
