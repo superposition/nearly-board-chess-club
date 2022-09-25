@@ -152,27 +152,60 @@ impl Contract {
  * The rest of this file holds the inline tests for the code above
  * Learn more about Rust tests: https://doc.rust-lang.org/book/ch11-01-writing-tests.html
  */
+#[cfg(not(target_arch = "wasm32"))]
 #[cfg(test)]
 mod tests {
-    // use super::*;
+    use super::*;
+    use near_sdk::{MockedBlockchain, EpochHeight};
+    use near_sdk::{testing_env, VMContext};
+    use std::collections::HashMap;
+    use std::iter::FromIterator;
 
-    // #[test]
-    // fn get_default_greeting() {
-    //     let contract = Contract::default();
-    //     // this test did not call set_greeting so should return the default "Hello" greeting
-    //     assert_eq!(
-    //         contract.get_greeting(),
-    //         "Hello".to_string()
-    //     );
+    // fn get_context(predecessor_account_id: AccountId) -> VMContext {
+    //     get_context_with_epoch_height(predecessor_account_id, 0)
+    // }
+
+    // fn get_context_with_epoch_height(
+    //     predecessor_account_id: AccountId,
+    //     epoch_height: EpochHeight,
+    // ) -> VMContext {
+    //     VMContext {
+    //         current_account_id: near_sdk::AccountId("alice_near".to_string()),
+    //         signer_account_id: near_sdk::AccountId("bob_near".to_string()),
+    //         signer_account_pk: vec![0, 1, 2],
+    //         predecessor_account_id,
+    //         input: vec![],
+    //         block_index: 0,
+    //         block_timestamp: 0,
+    //         account_balance: 0,
+    //         account_locked_balance: 0,
+    //         storage_usage: 1000,
+    //         attached_deposit: 0,
+    //         prepaid_gas: near_sdk::Gas(2 * 10u64.pow(14)),
+    //         random_seed: vec![0, 1, 2],
+    //         is_view: false,
+    //         output_data_receivers: vec![],
+    //         epoch_height,
+    //         view_config: todo!(),
+    //     }
     // }
 
     // #[test]
-    // fn set_then_get_greeting() {
-    //     let mut contract = Contract::default();
-    //     contract.set_greeting("howdy".to_string());
-    //     assert_eq!(
-    //         contract.get_greeting(),
-    //         "howdy".to_string()
-    //     );
+    // // test_add_player
+    // fn test_add_player() {
+    //     let context = get_context("bob.near".to_string());
+
+    //     let side = match unix_epoch_duration().as_nanos() & 1 {  // good enough for government work
+    //         0 => &mut self.white_players,
+    //         1 => &mut self.black_players,
+    //         _ => unreachable!(),
+    //     };
+
+    //     assert_eq!("bob.near".to_string());
+
     // }
+
+    
+
+
 }
