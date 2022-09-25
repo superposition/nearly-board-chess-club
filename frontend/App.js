@@ -48,6 +48,7 @@ export default function App({ isSignedIn, helloNEAR, wallet }) {
       <br/>
       <RoomDetails/>
 
+
       <main className={uiPleaseWait ? 'please-wait' : ''}>
         <h1>
           The contract says: <span className="greeting">{valueFromBlockchain}</span>
