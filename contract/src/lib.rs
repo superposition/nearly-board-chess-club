@@ -13,6 +13,7 @@ use near_sdk::{env, log, near_bindgen, require, AccountId, Promise};
 
 // Define the default message
 const STARTING_POSITION: &str = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+const VOTE_PERIOD_DURATION: u64 = 30;
 
 enum EndState {
     WHITEWIN,
@@ -42,7 +43,7 @@ impl Default for Contract{
             game_active: true,
             fen_state: STARTING_POSITION.to_string(),
             buyin_amount: 1_000_000_000_000_000_000_000_000,  // 1 near in yoctonear
-            next_period_timestamp: env::block_timestamp() + 600,
+            next_period_timestamp: env::block_timestamp() + VOTE_PERIOD_DURATION,
             votes: HashMap::new(),
             voted_this_period: HashSet::new(),
             white_players: HashSet::new(),
@@ -61,9 +62,9 @@ impl Contract {
     #[payable]
     pub fn add_player(&mut self, player_address: AccountId) {
         // verify that game still in buy-in period
-        require!(self.fen_state.split(" ").last() != Some("1"), "buy-in period is over");
-        // transfer buy-in to contract
-        require!(env::attached_deposit() > self.buyin_amount, "send more coins lol");  // using payable function
+        require!(self.fen_state.split(" ").last() == Some("1"), "buy-in period is over");
+        // // transfer buy-in to contract
+        // require!(env::attached_deposit() > self.buyin_amount, "send more coins lol");  // using payable function
         // add player to random color
         let side = match env::block_timestamp_ms() & 1 {  // good enough for government work
             0 => &mut self.white_players,
@@ -111,14 +112,14 @@ impl Contract {
         //     Some("other stuff") => { todo!(); },
         //     _ => (),
         // };
+        // set new fen
+        self.fen_state = winning_fen.to_owned();
         // empty votes map
         self.votes.clear();
         // empty voted_this_period set
         self.voted_this_period.clear();
         // set next vote timestamp
-        self.next_period_timestamp = env::block_timestamp() + 600;
-
-        todo!();
+        self.next_period_timestamp = env::block_timestamp() + VOTE_PERIOD_DURATION;
     }
 
     // fn finish_game(&mut self, end_state: EndState) {
