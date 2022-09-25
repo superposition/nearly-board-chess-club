@@ -1,5 +1,13 @@
-import React from 'react';
-// import {} fro,m
+import React, { useState } from 'react';
+
+import {Chess} from 'chess.js';
+//import { Col, Modal } from "antd"
+import Chessground from "react-chessground"
+import "react-chessground/dist/styles/chessground.css"
+
+// import "chessground/assets/chessground.base.css";
+// import "chessground/assets/chessground.brown.css";
+// import "chessground/assets/chessground.cburnett.css";
 
 export function SignInPrompt({greeting, onClick}) {
   return (
@@ -59,14 +67,76 @@ export function EducationalText() {
   );
 }
 
+
 export function RoomDetails (){
+
+  const [chess, setChess] = useState(new Chess())
+  const [pendingMove, setPendingMove] = useState();
+  const [selectVisible, setSelectVisible] = useState(false);
+  const [fen, setFen] = useState("");
+  const [lastMove, setLastMove] = useState()
+
+
+  const onMove = (from, to) => {
+    const moves = chess.moves({ verbose: true })
+    for (let i = 0, len = moves.length; i < len; i++) { /* eslint-disable-line */
+      if (moves[i].flags.indexOf("p") !== -1 && moves[i].from === from) {
+        setPendingMove([from, to])
+        setSelectVisible(true)
+        return
+      }
+    }
+    if (chess.move({ from, to, promotion: "x" })) {
+      setFen(chess.fen())
+      setLastMove([from, to])
+      setTimeout(randomMove, 500)
+    }
+  }
+
+  const promotion = e => {
+    const from = pendingMove[0]
+    const to = pendingMove[1]
+    chess.move({ from, to, promotion: e })
+    setFen(chess.fen())
+    setLastMove([from, to])
+    setSelectVisible(false)
+    setTimeout(randomMove, 500)
+  }
+
+  const turnColor = () => {
+    return chess.turn() === "w" ? "white" : "black"
+  }
+
+  const calcMovable = () => {
+    const dests = new Map()
+    chess.SQUARES.forEach(s => {
+      const ms = chess.moves({ square: s, verbose: true })
+      if (ms.length) dests.set(s, ms.map(m => m.to))
+    })
+    return {
+      free: false,
+      dests,
+      color: "white"
+    }
+  }
+
+
   return (
-    <Board/>
+    <Chessground
+          width="38vw"
+          height="38vw"
+          turnColor={turnColor()}
+          movable={calcMovable()}
+          lastMove={lastMove}
+          fen={fen}
+          onMove={onMove}
+          style={{ margin: "auto" }}
+        />
   );
 }
 
 export function Board() {
   return (
-    <p>Board</p>
+    <p> how</p>
   );
 }

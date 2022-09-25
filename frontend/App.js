@@ -41,9 +41,13 @@ export default function App({ isSignedIn, helloNEAR, wallet }) {
 
   return (
     <>
+      <br/>
       <SignOutButton accountId={wallet.accountId} onClick={() => wallet.signOut()}/>
       <br/>
+      <br/>
+      <br/>
       <RoomDetails/>
+
 
       <main className={uiPleaseWait ? 'please-wait' : ''}>
         <h1>
@@ -63,7 +67,6 @@ export default function App({ isSignedIn, helloNEAR, wallet }) {
             </button>
           </div>
         </form>
-        <EducationalText/>
       </main>
     </>
   );

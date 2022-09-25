@@ -34,7 +34,8 @@
     "@near-wallet-selector/nightly": "^7.0.0",
     "@near-wallet-selector/nightly-connect": "^7.0.0",
     "@near-wallet-selector/sender": "^7.0.0",
-    "@near-wallet-selector/wallet-connect": "^7.0.0"
+    "@near-wallet-selector/wallet-connect": "^7.0.0",
+    "react-chessground": "^1.5.0"
   },
   "resolutions": {
     "@babel/preset-env": "7.13.8"

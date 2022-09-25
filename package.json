@@ -13,8 +13,12 @@
     "test:integration": "cd integration-tests && cargo run --example integration-tests \"../contract/target/wasm32-unknown-unknown/release/hello_near.wasm\"",
     "postinstall": "cd frontend && npm install && cd .. && echo rs tests && echo rs contract"
   },
-  "devDependencies": {
-    "near-cli": "^3.3.0"
+  "dependencies": {
+    "antd": "^3.19.3",
+    "chess.js": "^0.10.2"
   },
-  "dependencies": {}
+  "devDependencies": {
+    "@react-chess/chessground": "^1.3.4",
+    "near-cli": "^3.3.0"
+  }
 }
