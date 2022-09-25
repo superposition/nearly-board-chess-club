@@ -21,11 +21,6 @@ enum EndState {
     DRAW,
 }
 
-// TODO: get timestamp from near_sdk?
-fn unix_epoch_duration() -> Duration {
-    SystemTime::now().duration_since(SystemTime::UNIX_EPOCH).unwrap()
-}
-
 // Define the contract structure
 #[near_bindgen]
 #[derive(BorshDeserialize, BorshSerialize)]
@@ -47,7 +42,7 @@ impl Default for Contract{
             game_active: true,
             fen_state: STARTING_POSITION.to_string(),
             buyin_amount: 1_000_000_000_000_000_000_000_000,  // 1 near in yoctonear
-            next_period_timestamp: unix_epoch_duration().as_secs() + 600,
+            next_period_timestamp: env::block_timestamp() + 600,
             votes: HashMap::new(),
             voted_this_period: HashSet::new(),
             white_players: HashSet::new(),
@@ -70,7 +65,7 @@ impl Contract {
         // transfer buy-in to contract
         require!(env::attached_deposit() > self.buyin_amount, "send more coins lol");  // using payable function
         // add player to random color
-        let side = match unix_epoch_duration().as_nanos() & 1 {  // good enough for government work
+        let side = match env::block_timestamp_ms() & 1 {  // good enough for government work
             0 => &mut self.white_players,
             1 => &mut self.black_players,
             _ => unreachable!(),
@@ -99,7 +94,7 @@ impl Contract {
     // verify next vote timestamp is in the past, select winnning vote and update state
     pub fn tally_votes(&mut self) {
         // verify next vote timestamp is in the past
-        require!(unix_epoch_duration().as_secs() > self.next_period_timestamp);
+        require!(env::block_timestamp() > self.next_period_timestamp);
         // find highest voted fen
         let mut curr_most_votes = 0;
         let mut winning_fen = &self.fen_state;
@@ -109,31 +104,31 @@ impl Contract {
                 winning_fen = key;
             }
         }
-        // parse for end game states
-        match winning_fen.split(" ").last() {
-            Some("RESIGN") => { todo!(); },
-            Some("OFFER_DRAW") => { todo!(); },
-            Some("other stuff") => { todo!(); },
-            _ => (),
-        };
+        // // parse for end game states
+        // match winning_fen.split(" ").last() {
+        //     Some("RESIGN") => { todo!(); },
+        //     Some("OFFER_DRAW") => { todo!(); },
+        //     Some("other stuff") => { todo!(); },
+        //     _ => (),
+        // };
         // empty votes map
         self.votes.clear();
         // empty voted_this_period set
         self.voted_this_period.clear();
         // set next vote timestamp
-        self.next_period_timestamp = unix_epoch_duration().as_secs() + 600;
+        self.next_period_timestamp = env::block_timestamp() + 600;
 
         todo!();
     }
 
-    fn finish_game(&mut self, end_state: EndState) {
-        // mark game as over
-        self.game_active = false;
-        // take 5% out of pot for dao
-        todo!();
-        // distribute remaining pot to winners
-        todo!();
-    }
+    // fn finish_game(&mut self, end_state: EndState) {
+    //     // mark game as over
+    //     self.game_active = false;
+    //     // take 5% out of pot for dao
+    //     todo!();
+    //     // distribute remaining pot to winners
+    //     todo!();
+    // }
 
     // // Public method - returns the greeting saved, defaulting to DEFAULT_MESSAGE
     // pub fn get_greeting(&self) -> String {
