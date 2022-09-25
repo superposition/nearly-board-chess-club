@@ -66,7 +66,7 @@ impl Contract {
         //require!(self.fen_state.split(" ").last() != Some("1"), "buy-in period is over");
         // transfer buy-in to contract
         //require!(env::attached_deposit() > self.buyin_amount, "send more coins lol");  // using payable function
-        require!(self.player_has_stnear(&player_address));
+        require!(self.player_has_stnear(&player_address), "account must have stNEAR to play!");
         // add player to random color
         if self.white_players.is_empty() {
             self.white_players.insert(player_address);
@@ -86,16 +86,16 @@ impl Contract {
     pub fn cast_vote(&mut self, board_fen: String, vote_fen: String) {
         let player_address = env::signer_account_id();
         // verify voter has correct board state
-        require!(board_fen == self.fen_state);
+        require!(board_fen == self.fen_state, "out of date board state");
         // verify player hasn't voted this period
-        require!(!self.voted_this_period.contains(&player_address));
+        require!(!self.voted_this_period.contains(&player_address), "player already voted this period");
         // verify player in color to move
         let players_to_move = match self.fen_state.split(" ").nth(1) {
             Some("w") => &self.white_players,
             Some("b") => &self.black_players,
             _ => env::panic_str("malformed FEN"),
         };
-        require!(players_to_move.contains(&player_address));
+        require!(players_to_move.contains(&player_address), "player can't vote right now");
         // add vote to votes
         *self.votes.entry(vote_fen).or_insert(0) += 1;
     }
@@ -103,7 +103,7 @@ impl Contract {
     // verify next vote timestamp is in the past, select winnning vote and update state
     pub fn tally_votes(&mut self) {
         // verify next vote timestamp is in the past
-        require!(env::block_timestamp() > self.next_period_timestamp);
+        require!(env::block_timestamp() > self.next_period_timestamp, "current voting period not over");
         // find highest voted fen
         let mut curr_most_votes = 0;
         let mut winning_fen = &self.fen_state;
