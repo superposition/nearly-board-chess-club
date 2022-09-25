@@ -3,7 +3,6 @@ const express= require('express');
 const { createCanvas, loadImage } = require('canvas');
 const fs = require('fs')
 const functions = require('./functions.js');
-const { load } = require('signal-exit');
 const { NFTStorage,File , Blob} = require('nft.storage')
 const fetch = require('node-fetch')
 

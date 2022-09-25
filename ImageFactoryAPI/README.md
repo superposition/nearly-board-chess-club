@@ -8,3 +8,15 @@ This an API that creates an NFT image for the board chess club. The properties a
 
 `sudo apt install node`
 
+2. Install dependencies
+
+`npm install express fs canvas nft.storage node-fetch`
+
+3. Run the app
+
+`node main.js`
+
+and it will run on localhost:3000 (you can change the port within the code)
+
+To make a new NFT image make a `GET /new`.
+
