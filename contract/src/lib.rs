@@ -120,6 +120,7 @@ impl Contract {
         //     Some("other stuff") => { todo!(); },
         //     _ => (),
         // };
+        self.fen_state = winning_fen.to_owned();
         // empty votes map
         self.votes.clear();
         // empty voted_this_period set
