@@ -35,6 +35,11 @@ pub struct Contract {
     white_players: HashSet<AccountId>,
     black_players: HashSet<AccountId>,
 }
+// TODO MOVE HISTORY
+// TODO new CONTRACT
+// ADD NFT METHODS
+// buy_in
+// Approve -> exact amount
 
 // Define the default, which automatically initializes the contract
 impl Default for Contract{
