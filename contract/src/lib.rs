@@ -59,25 +59,21 @@ impl Contract {
         self.fen_state
     }
 
-    fn player_has_stnear(&self, player_address: &AccountId) -> bool { true }
-
     #[payable]
     pub fn add_player(&mut self, player_address: AccountId) {
         // verify that game still in buy-in period
-        //require!(self.fen_state.split(" ").last() != Some("1"), "buy-in period is over");
+        // require!(self.fen_state.split(" ").last() == Some("1"), "buy-in period is over");
         // transfer buy-in to contract
         //require!(env::attached_deposit() > self.buyin_amount, "send more coins lol");  // using payable function
-        require!(self.player_has_stnear(&player_address), "account must have stNEAR to play!");
         // add player to random color
         if self.white_players.is_empty() {
             self.white_players.insert(player_address);
         } else if self.black_players.is_empty() {
             self.black_players.insert(player_address);
         } else {
-            let side = match env::block_timestamp_ms() & 1 {  // good enough for government work
-                0 => &mut self.white_players,
-                1 => &mut self.black_players,
-                _ => unreachable!(),
+            let side = match env::block_timestamp_ms() % 2 == 0 {  // good enough for government work
+                true => &mut self.white_players,
+                false => &mut self.black_players,
             };
             side.insert(player_address);
         }
@@ -89,18 +85,26 @@ impl Contract {
         // verify voter has correct board state
         require!(board_fen == self.fen_state, "out of date board state");
         // verify player has voting rights
-        require!(self.white_players.contains(&player_address) || self.black_players.contains(&player_address), "player can't vote in this game");
+        require!(self.voting_rights(&player_address), "player can't vote in this game");
         // verify player hasn't voted this period
         require!(!self.voted_this_period.contains(&player_address), "player already voted this period");
         // verify player in color to move
+        require!(self.can_vote(&player_address), "it's not your turn");
+        // add vote to votes
+        *self.votes.entry(vote_fen).or_insert(0) += 1;
+    }
+
+    pub fn voting_rights(&self, player_address: &AccountId) -> bool {
+        self.white_players.contains(player_address) || self.black_players.contains(player_address)
+    }
+
+    pub fn can_vote(&self, player_address: &AccountId) -> bool {
         let players_to_move = match self.fen_state.split(" ").nth(1) {
             Some("w") => &self.white_players,
             Some("b") => &self.black_players,
             _ => env::panic_str("malformed FEN"),
         };
-        require!(players_to_move.contains(&player_address), "it's not your turn");
-        // add vote to votes
-        *self.votes.entry(vote_fen).or_insert(0) += 1;
+        players_to_move.contains(player_address)
     }
 
     // verify next vote timestamp is in the past, select winnning vote and update state
