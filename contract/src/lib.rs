@@ -8,7 +8,7 @@
 
 use std::collections::{HashMap, HashSet};
 use near_sdk::borsh::{self, BorshDeserialize, BorshSerialize};
-use near_sdk::{env, log, near_bindgen, require, AccountId, ONE_NEAR};
+use near_sdk::{env, near_bindgen, require, AccountId, ONE_NEAR};
 
 // Define the default message
 const STARTING_POSITION: &str = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
@@ -32,6 +32,7 @@ pub struct Contract {
     game_active: bool,
     board_fen: String,
     buyin_amount: u128,
+    base_voting_interval: u64,
     next_period_timestamp: u64,
     votes: HashMap<String, u64>,
     voted_this_period: HashSet<AccountId>,
@@ -46,6 +47,7 @@ impl Default for Contract{
             game_active: true,
             board_fen: STARTING_POSITION.to_string(),
             buyin_amount: ONE_NEAR,
+            base_voting_interval: VOTING_PERIOD_INTERVAL,
             next_period_timestamp: env::block_timestamp() + VOTING_PERIOD_INTERVAL,
             votes: HashMap::new(),
             voted_this_period: HashSet::new(),
@@ -58,8 +60,8 @@ impl Default for Contract{
 // Implement the contract structure
 #[near_bindgen]
 impl Contract {
-    pub fn new(buyin_amount: u128) -> Self {
-        Self { buyin_amount, ..Default::default() }
+    pub fn new(buyin_amount: u128, base_voting_interval: u64) -> Self {
+        Self { buyin_amount, base_voting_interval, ..Default::default() }
     }
     pub fn get_fen(self) -> String {
         self.board_fen
@@ -67,8 +69,6 @@ impl Contract {
 
     #[payable]
     pub fn add_player(&mut self, player_address: AccountId) {
-        // // verify that game still in buy-in period
-        // require!(self.board_fen.split(" ").last() == Some("1"), "buy-in period is over");
         // transfer buy-in to contract
         require!(env::attached_deposit() >= self.buyin_amount, "send more coin lol");  // using payable function
         // add player to random color
@@ -171,7 +171,7 @@ impl Contract {
 mod tests {
     use super::*;
     use near_sdk::test_utils::VMContextBuilder;
-    use near_sdk::{testing_env, VMContext, Promise};
+    use near_sdk::{testing_env, VMContext};
 
     fn get_context(is_view: bool) -> VMContext {
         VMContextBuilder::new()
@@ -185,8 +185,7 @@ mod tests {
         let context = get_context(true);
         testing_env!(context);
         // ... Write test here
-        let buyin = ONE_NEAR;
-        let contract = Contract::new(buyin);
+        let contract = Contract::new(ONE_NEAR, VOTING_PERIOD_INTERVAL);
         assert_eq!(
             contract.get_fen(),
             STARTING_POSITION.to_string(),
@@ -200,7 +199,7 @@ mod tests {
         testing_env!(context);
         // ... Write test here
         let bob: AccountId = "bob_near".parse().unwrap();
-        let mut contract = Contract::new(ONE_NEAR);
+        let mut contract = Contract::new(ONE_NEAR, VOTING_PERIOD_INTERVAL);
         
         contract.add_player(bob.clone());
     }
